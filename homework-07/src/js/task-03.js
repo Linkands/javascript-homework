@@ -15,3 +15,13 @@ const images = [
     alt: 'Group of Horses Running',
   },
 ];
+
+const galleryList = document.getElementById("gallery");
+
+const galleryItems = ({ url, alt }) =>
+  `<li><img src="${url}" alt="${alt}" width=200px></li>`
+
+const galleryMarkup = images.map(galleryItems).join("")
+
+galleryList.insertAdjacentHTML("afterbegin", galleryMarkup)
+galleryList.setAttribute("style", "display: flex; justify-content: space-around; list-style: none; padding: 0px;")
