@@ -6,9 +6,11 @@ const closeLightboxBtn = document.querySelector('[data-action="close-lightbox"]'
 const lightboxImage = document.querySelector(".lightbox__image");
 const lightboxOverlay = document.querySelector(".lightbox__overlay");
 const galleryMarkup = createGalleryMarkup(galleryItems);
+const imageArray = [...galleryItems];
 
+let activeIndex = null;
 
-galleryList.insertAdjacentHTML('beforeend', galleryMarkup);
+galleryList.insertAdjacentHTML('beforeend', galleryMarkup.join(''));
 
 galleryList.addEventListener("click", onImageClick);
 closeLightboxBtn.addEventListener("click", onCloseBtnOrOverlayClick);
@@ -25,7 +27,7 @@ function createGalleryMarkup(images) {
         alt="${description}">
         </a>
         </li>`;
-    }).join('');
+    });
 }
 
 function onImageClick(e) {
@@ -33,15 +35,16 @@ function onImageClick(e) {
     if (e.target.nodeName !== "IMG") {
         return;
     }
-    else if (e.target.nodeName === "IMG") {
-        lightbox.classList.add("is-open");
-        lightboxImage.src = e.target.parentNode.href;
-        lightboxImage.alt = e.target.alt;
-        
-    };
+    galleryMarkup.forEach((el, ind) => {
+        if (el.includes(e.target.src)) {
+            activeIndex = ind;
+        }
+    })
+    lightbox.classList.add("is-open");
+    lightboxImage.src = e.target.parentNode.href;
+    lightboxImage.alt = e.target.alt;
     window.addEventListener("keydown", closeLightboxOnEscEvent)
     window.addEventListener("keydown", changeImageWithArrows)
-    
 }
 
 function closeLightbox(e) {
@@ -65,22 +68,24 @@ function closeLightboxOnEscEvent(e) {
     }
 }
 
-const imageArray = [...galleryItems];
-let currentIndex = 1;
-
 function changeImageWithArrows(e) {
     
-    if (e.code === "ArrowLeft" && currentIndex > 0) {
-        currentIndex -= 1;
+    if (e.code === "ArrowLeft" && activeIndex > -1) {
+        activeIndex -= 1;
     }
-    if (e.code === "ArrowRight" && currentIndex < imageArray.length-1) {
-        currentIndex += 1;
+    if (e.code === "ArrowLeft" && activeIndex === -1) {
+        activeIndex = imageArray.length - 1;
     }
-    setModalImage(currentIndex)
+    if (e.code === "ArrowRight") {
+        activeIndex += 1;
+    }
+    if (e.code === "ArrowRight" && activeIndex === imageArray.length-1+1) {
+        activeIndex = 0
+    }
+    
+    setModalImage(activeIndex)
 }
 
 function setModalImage(index) {
-    console.log(imageArray[index])
     lightboxImage.src = imageArray[index].original
-    console.log(currentIndex)
 }
